@@ -80,7 +80,7 @@ function getCurrentEthiopianDate() {
     const timestamp = new Date(ethiopianLocalTime);
 
     const now = timestamp;
-    const hours = now.getHours() - 6; 
+    const hours = now.getHours() - 3; 
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
 

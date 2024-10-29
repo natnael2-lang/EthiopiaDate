@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+const cors=require("cors")
+app.use(cors())
 
 class EthiopianDate {
     constructor(year, month, day, hours, minutes, seconds) {

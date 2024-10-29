@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
-const cors=require("cors")
-app.use(cors())
+const cors = require("cors");
+app.use(cors());
 
 class EthiopianDate {
     constructor(year, month, day, hours, minutes, seconds) {
@@ -13,22 +13,14 @@ class EthiopianDate {
         this.seconds = seconds;
     }
 
-    
-    toString() {
-        return `${this.year } - Month: ${this.month} - Day: ${this.day} ${this.hours % 12}:${this.minutes}:${this.seconds}`;
-    }
-
-    
     formatTime() {
         const hourIn12Format = this.hours % 12 || 12; 
-        const period = this.hours >= 12? 'kemshitu' : 'ke kenu';
-        return `year: ${this.year } - Month: ${this.month} - Day: ${this.day} -hours: ${hourIn12Format} -minutes :${this.minutes} -seconds :${this.seconds} ${period}`;
+        const period = this.hours >= 12 ? 'kemshitu' : 'ke kenu';
+        return `year: ${this.year} - Month: ${this.month} - Day: ${this.day} - hours: ${hourIn12Format} - minutes: ${this.minutes} - seconds: ${this.seconds} ${period}`;
     }
 
-    
     advanceOneSecond() {
         this.seconds++;
-
         if (this.seconds >= 60) {
             this.seconds = 0;
             this.minutes++;
@@ -43,14 +35,10 @@ class EthiopianDate {
         }
     }
 
-   
     advanceOneDay() {
         this.day++;
-
-        
-        
         if (this.month === 13) { 
-            this.month="puagme"
+            this.month = "puagme";
             const daysInPagume = (this.isLeapYear() ? 6 : 5);
             if (this.day > daysInPagume) {
                 this.day = 1; 
@@ -67,48 +55,31 @@ class EthiopianDate {
         }
     }
 
-    
     isLeapYear() {
         return this.year % 4 === 0;
     }
 }
 
-
 function getCurrentEthiopianDate() {
     const now = new Date();
-    const hours = now.getHours() - 6; 
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
+    const utcOffset = 3; // Ethiopia is UTC+3
+    const localHours = now.getUTCHours() + utcOffset; // Convert UTC to Ethiopian time
+    const minutes = now.getUTCMinutes();
+    const seconds = now.getUTCSeconds();
 
-   
-    return new EthiopianDate(2017, 2, 19, hours, minutes, seconds);
+    const ethiopianYear = now.getFullYear() + ((localHours < 6) ? -1 : 0); // Adjust year if before 6 AM
+    const ethiopianMonth = Math.floor(((localHours + 6) % 24) / 2) + 1; // Simple conversion for month
+    const ethiopianDay = Math.floor((localHours + 6) % 24 / 2); // Simple conversion for day
+
+    return new EthiopianDate(ethiopianYear, ethiopianMonth, ethiopianDay, localHours % 24, minutes, seconds);
 }
-
-
-function automaticDateCounter() {
-    let ethiopianDate = getCurrentEthiopianDate();
-
-   
-
-    setInterval(() => {
-        ethiopianDate.advanceOneSecond(); 
-        console.log(` ${ethiopianDate.formatTime()}`);
-    }, 1000); 
-}
-
-
-automaticDateCounter();
-
 
 app.get('/ethiopian-date', (req, res) => {
     const ethiopianDate = getCurrentEthiopianDate(); 
-
     res.json({
-        
         formattedTime: ethiopianDate.formatTime()
     });
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

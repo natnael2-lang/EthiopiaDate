@@ -96,7 +96,7 @@ function automaticDateCounter() {
 
     setInterval(() => {
         ethiopianDate.advanceOneSecond(); 
-        console.log(` ${ethiopianDate.formatTime()}`);
+        
     }, 1000); 
 }
 
